@@ -1,4 +1,4 @@
-﻿using Laraue.EfCoreTriggers.Common.Converters;
+using Laraue.EfCoreTriggers.Common.Converters;
 using Laraue.EfCoreTriggers.Common.TriggerBuilders.Base;
 
 namespace Laraue.EfCoreTriggers.Common.SqlGeneration
@@ -33,5 +33,8 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
         SqlBuilder GetTriggerInsertActionSql<TTriggerEntity, TInsertEntity>(TriggerInsertAction<TTriggerEntity, TInsertEntity> triggerInsertAction)
             where TTriggerEntity : class
             where TInsertEntity : class;
+
+        SqlBuilder GetTriggerRawActionSql<TTriggerEntity>(TriggerRawAction<TTriggerEntity> triggerRawAction)
+            where TTriggerEntity : class;
     }
 }

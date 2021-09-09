@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using Laraue.EfCoreTriggers.Common.TriggerBuilders.Base;
 
@@ -52,6 +52,12 @@ namespace Laraue.EfCoreTriggers.Common.TriggerBuilders.OnUpdate
             where TInsertEntity : class
         {
             Insert(new OnUpdateTriggerInsertAction<TTriggerEntity, TInsertEntity>(setValues));
+            return this;
+        }
+
+        public OnUpdateTriggerActions<TTriggerEntity> Raw(Expression<Func<TTriggerEntity, TTriggerEntity, string>> sql)
+        {
+            Raw(new OnUpdateTriggerRawAction<TTriggerEntity>(sql));
             return this;
         }
     }

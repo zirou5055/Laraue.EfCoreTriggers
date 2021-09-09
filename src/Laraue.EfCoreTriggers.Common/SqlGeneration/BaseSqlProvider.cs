@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -151,6 +151,18 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
                 .Append($"INSERT INTO {GetTableName(typeof(TInsertEntity))} ")
                 .Append(insertStatement.StringBuilder)
                 .Append(";");
+        }
+
+        public SqlBuilder GetTriggerRawActionSql<TTriggerEntity>(TriggerRawAction<TTriggerEntity> triggerRawAction)
+            where TTriggerEntity : class
+        {
+            var expression = triggerRawAction.RawExpression.Body;
+            return expression switch
+            {
+                ConstantExpression constantExpression => new SqlBuilder(constantExpression.Value as string),
+                MethodCallExpression methodCallExpression => GetMethodCallExpressionSql(methodCallExpression, triggerRawAction.RawExpressionPrefixes),
+                _ => throw new NotSupportedException($"Expression of type {expression.GetType()} for {expression} is not supported."),
+            };
         }
     }
 }

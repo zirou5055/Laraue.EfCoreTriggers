@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using Laraue.EfCoreTriggers.Common.TriggerBuilders.Base;
 
@@ -52,6 +52,12 @@ namespace Laraue.EfCoreTriggers.Common.TriggerBuilders.OnDelete
             where TInsertEntity : class
         {
             Insert(new OnDeleteTriggerInsertAction<TTriggerEntity, TInsertEntity>(setValues));
+            return this;
+        }
+
+        public OnDeleteTriggerActions<TTriggerEntity> Raw(Expression<Func<TTriggerEntity, string>> sql)
+        {
+            Raw(new OnDeleteTriggerRawAction<TTriggerEntity>(sql));
             return this;
         }
     }

@@ -1,4 +1,4 @@
-﻿using Laraue.EfCoreTriggers.PostgreSql.Extensions;
+using Laraue.EfCoreTriggers.PostgreSql.Extensions;
 using Laraue.EfCoreTriggers.Tests;
 using Laraue.EfCoreTriggers.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Laraue.EfCoreTriggers.Common.SqlGeneration;
 
 namespace Laraue.EfCoreTriggers.Common.TriggerBuilders.Base
@@ -27,5 +27,8 @@ namespace Laraue.EfCoreTriggers.Common.TriggerBuilders.Base
 
         protected void Insert<TInsertEntity>(TriggerInsertAction<TTriggerEntity, TInsertEntity> insertAction)
             where TInsertEntity : class => AddAction(insertAction);
+
+        protected void Raw(TriggerRawAction<TTriggerEntity> rawAction)
+            => AddAction(rawAction);
     }
 }

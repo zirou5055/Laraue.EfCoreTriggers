@@ -1,4 +1,4 @@
-﻿using Laraue.EfCoreTriggers.Common.SqlGeneration;
+using Laraue.EfCoreTriggers.Common.SqlGeneration;
 using Laraue.EfCoreTriggers.Tests.Tests.Base;
 
 namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
@@ -26,32 +26,32 @@ namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 
         public override void EnumValueSql()
         {
-            Provider.AssertGeneratedSql(ExceptedEnumValueSql, SetEnumValueExpression);
+            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedEnumValueSql, SetEnumValueExpression);
         }
 
         public override void DecimalAddSql()
         {
-            Provider.AssertGeneratedSql(ExceptedDecimalAddSql, AddDecimalValueExpression);
+            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedDecimalAddSql, AddDecimalValueExpression);
         }
 
         public override void DoubleSubSql()
         {
-            Provider.AssertGeneratedSql(ExceptedDoubleSubSql, SubDoubleValueExpression);
+            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedDoubleSubSql, SubDoubleValueExpression);
         }
 
         public override void IntMultiplySql()
         {
-            Provider.AssertGeneratedSql(ExceptedIntMultiplySql, MultiplyIntValueExpression);
+            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedIntMultiplySql, MultiplyIntValueExpression);
         }
 
         public override void BooleanValueSql()
         {
-            Provider.AssertGeneratedSql(ExceptedBooleanSql, SetBooleanValueExpression);
+            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedBooleanSql, SetBooleanValueExpression);
         }
 
         public override void NewGuid()
         {
-            Provider.AssertGeneratedSql(ExceptedNewGuidSql, SetNewGuidValueExpression);
+            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedNewGuidSql, SetNewGuidValueExpression);
         }
     }
 }
