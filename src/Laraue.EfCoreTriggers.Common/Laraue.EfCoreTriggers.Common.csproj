@@ -3,14 +3,17 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Description>Common classes EfCoreTriggers packages.</Description>
-    <RepositoryUrl>https://github.com/win7user10/Laraue.EfCoreTriggers</RepositoryUrl>
+    <RepositoryUrl>https://github.com/zirou5055/Laraue.EfCoreTriggers.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Authors>Belyanskiy Ilya</Authors>
+    <Authors>Belyanskiy Ilya, zirou</Authors>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
-    <PackageProjectUrl>https://github.com/win7user10/Laraue.EfCoreTriggers</PackageProjectUrl>
+    <Version>1.0.1-alpha.2</Version>
+    <PackageProjectUrl>https://github.com/zirou5055/Laraue.EfCoreTriggers</PackageProjectUrl>
     <PackageTags>Entity Framework Core;entity-framework-core;ef;efcore;triggers;sql</PackageTags>
     <LangVersion>Latest</LangVersion>
+    <Product>Zirou.EfCoreTriggers.Common</Product>
+    <PackageId>Zirou.EfCoreTriggers.Common</PackageId>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
