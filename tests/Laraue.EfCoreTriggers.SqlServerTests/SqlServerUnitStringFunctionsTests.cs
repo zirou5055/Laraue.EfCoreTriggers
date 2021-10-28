@@ -15,19 +15,19 @@ namespace Laraue.EfCoreTriggers.SqlServerTests
         public SqlServerUnitStringFunctionsTests() : base(new SqlServerProvider(new ContextFactory().CreateDbContext().Model))
         {
         }
-        public override string ExceptedConcatSql => "INSERT INTO destination_entities (string_field) VALUES (@NewStringField + 'abc');";
+        public override string ExceptedConcatSql => "INSERT INTO destination_entities (\"string_field\") VALUES (@NewStringField + 'abc');";
 
-        public override string ExceptedStringLowerSql => "INSERT INTO destination_entities (string_field) VALUES (LOWER(@NewStringField));";
+        public override string ExceptedStringLowerSql => "INSERT INTO destination_entities (\"string_field\") VALUES (LOWER(@NewStringField));";
 
-        public override string ExceptedStringUpperSql => "INSERT INTO destination_entities (string_field) VALUES (UPPER(@NewStringField));";
+        public override string ExceptedStringUpperSql => "INSERT INTO destination_entities (\"string_field\") VALUES (UPPER(@NewStringField));";
 
-        public override string ExceptedStringTrimSql => "INSERT INTO destination_entities (string_field) VALUES (TRIM(@NewStringField));";
+        public override string ExceptedStringTrimSql => "INSERT INTO destination_entities (\"string_field\") VALUES (TRIM(@NewStringField));";
 
-        public override string ExceptedContainsSql => "INSERT INTO destination_entities (boolean_value) VALUES (CHARINDEX(@NewStringField, 'abc') > 0);";
+        public override string ExceptedContainsSql => "INSERT INTO destination_entities (\"boolean_value\") VALUES (CHARINDEX(@NewStringField, 'abc') > 0);";
 
-        public override string ExceptedEndsWithSql => "INSERT INTO destination_entities (boolean_value) VALUES (@NewStringField LIKE ('%' + 'abc'));";
+        public override string ExceptedEndsWithSql => "INSERT INTO destination_entities (\"boolean_value\") VALUES (@NewStringField LIKE ('%' + 'abc'));";
 
-        public override string ExceptedIsNullOrEmptySql => "INSERT INTO destination_entities (boolean_value) VALUES (@NewStringField IS NULL OR @NewStringField = '');";
+        public override string ExceptedIsNullOrEmptySql => "INSERT INTO destination_entities (\"boolean_value\") VALUES (@NewStringField IS NULL OR @NewStringField = '');";
 
     }
 }

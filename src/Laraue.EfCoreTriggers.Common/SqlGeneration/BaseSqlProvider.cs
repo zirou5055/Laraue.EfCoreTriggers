@@ -93,7 +93,7 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
         {
             var assignmentParts = GetMemberInitExpressionAssignmentParts((MemberInitExpression)insertExpression.Body, argumentTypees);
             var sqlResult = new SqlBuilder(assignmentParts.Values);
-            sqlResult.Append($"({string.Join(", ", assignmentParts.Select(x => GetColumnName(x.Key)))})")
+            sqlResult.Append($"({string.Join(", ", assignmentParts.Select(x => $"\"{GetColumnName(x.Key)}\""))})")
                 .Append($" VALUES ({string.Join(", ", assignmentParts.Select(x => x.Value))})");
             return sqlResult;
         }
