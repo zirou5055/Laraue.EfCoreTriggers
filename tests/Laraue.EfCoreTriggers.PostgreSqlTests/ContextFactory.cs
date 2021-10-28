@@ -1,7 +1,8 @@
-using Laraue.EfCoreTriggers.PostgreSql.Extensions;
+﻿using Laraue.EfCoreTriggers.PostgreSql.Extensions;
 using Laraue.EfCoreTriggers.Tests;
 using Laraue.EfCoreTriggers.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Laraue.EfCoreTriggers.PostgreSqlTests
 {
@@ -19,6 +20,7 @@ namespace Laraue.EfCoreTriggers.PostgreSqlTests
                     x => x.MigrationsAssembly(typeof(TContext).Assembly.FullName))
                 .UseSnakeCaseNamingConvention()
                 .UsePostgreSqlTriggers()
+                .ReplaceService<IModelCacheKeyFactory, DynamicModelCacheKeyFactoryDesignTimeSupport>()
                 .Options;
         }
     }

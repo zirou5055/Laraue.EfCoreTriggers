@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Abs;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Acos;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Asin;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Atan;
-using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.AtanTwo;
+using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Atan2;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Ceiling;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Cos;
 using Laraue.EfCoreTriggers.Common.Converters.MethodCall.Math.Exp;
@@ -40,12 +41,14 @@ namespace Laraue.EfCoreTriggers.MySql
             AddConverter(new MathAcosConverter());
             AddConverter(new MathAsinConverter());
             AddConverter(new MathAtanConverter());
-            AddConverter(new MathAtanTwoConverter());
+            AddConverter(new MathAtan2Converter());
             AddConverter(new MathCeilingConverter());
             AddConverter(new MathCosConverter());
             AddConverter(new MathExpConverter());
             AddConverter(new MathFloorConverter());
         }
+
+        protected override char Delimiter => '`';
 
         protected override Dictionary<Type, string> TypeMappings { get; } = new()
         {
@@ -129,15 +132,14 @@ namespace Laraue.EfCoreTriggers.MySql
             return sql;
         }
 
-        public override SqlBuilder GetTriggerUpsertActionSql<TTriggerEntity, TUpdateEntity>(TriggerUpsertAction<TTriggerEntity, TUpdateEntity> triggerUpsertAction)
+        public override SqlBuilder GetTriggerUpsertActionSql<TTriggerEntity, TUpdateEntity>(
+            TriggerUpsertAction<TTriggerEntity, TUpdateEntity> triggerUpsertAction)
         {
+            var matchExpressionParts = GetLambdaNewExpressionParts(triggerUpsertAction.MatchExpression, triggerUpsertAction.MatchExpressionPrefixes);
             var insertStatementSql = GetInsertStatementBodySql(triggerUpsertAction.InsertExpression, triggerUpsertAction.InsertExpressionPrefixes);
-            var newExpressionColumnsSql = GetNewExpressionColumnsSql(
-                (NewExpression)triggerUpsertAction.MatchExpression.Body,
-                triggerUpsertAction.MatchExpressionPrefixes.ToDictionary(x => x.Key, x => ArgumentType.None));
 
             var sqlBuilder = new SqlBuilder(insertStatementSql.AffectedColumns)
-                .MergeColumnsInfo(newExpressionColumnsSql);
+                .MergeColumnsInfo(matchExpressionParts.Values);
 
             if (triggerUpsertAction.OnMatchExpression is null)
             {
@@ -167,6 +169,13 @@ namespace Laraue.EfCoreTriggers.MySql
             }
 
             return base.GetConvertExpressionSql(unaryExpression, member);
+        }
+
+        protected override SqlBuilder GetEmptyInsertStatementBodySql(LambdaExpression insertExpression, Dictionary<string, ArgumentType> argumentTypes)
+        {
+            var sqlBuilder = new SqlBuilder();
+            sqlBuilder.Append("() VALUES ()");
+            return sqlBuilder;
         }
 
         protected override string GetNewGuidExpressionSql() => "UUID()";

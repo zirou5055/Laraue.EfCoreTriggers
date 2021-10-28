@@ -1,8 +1,10 @@
-using Laraue.EfCoreTriggers.Common.SqlGeneration;
+﻿using Laraue.EfCoreTriggers.Common.SqlGeneration;
 using Laraue.EfCoreTriggers.Tests.Tests.Base;
+using Xunit.Categories;
 
 namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 {
+    [UnitTest]
     public abstract class UnitStringFunctionsTests : BaseStringFunctionsTests
     {
         protected readonly ITriggerProvider Provider;
@@ -28,37 +30,37 @@ namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 
         protected override void StringConcatSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedConcatSql, ConcatStringExpression);
+            Provider.AssertGeneratedSql(ExceptedConcatSql, ConcatStringExpression);
         }
 
         protected override void StringLowerSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedStringLowerSql, StringToLowerExpression);
+            Provider.AssertGeneratedSql(ExceptedStringLowerSql, StringToLowerExpression);
         }
 
         protected override void StringUpperSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedStringUpperSql, StringToUpperExpression);
+            Provider.AssertGeneratedSql(ExceptedStringUpperSql, StringToUpperExpression);
         }
 
         protected override void StringTrimSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedStringTrimSql, TrimStringValueExpression);
+            Provider.AssertGeneratedSql(ExceptedStringTrimSql, TrimStringValueExpression);
         }
 
         protected override void StringContainsSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedContainsSql, ContainsStringValueExpression);
+            Provider.AssertGeneratedSql(ExceptedContainsSql, ContainsStringValueExpression);
         }
         
         protected override void StringEndsWithSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedEndsWithSql, EndsWithStringValueExpression);
+            Provider.AssertGeneratedSql(ExceptedEndsWithSql, EndsWithStringValueExpression);
         }
 
         protected override void StringIsNullOrEmptySql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedIsNullOrEmptySql, IsNullOrEmptyStringValueExpression);
+            Provider.AssertGeneratedSql(ExceptedIsNullOrEmptySql, IsNullOrEmptyStringValueExpression);
         }
     }
 }

@@ -1,8 +1,10 @@
-using Laraue.EfCoreTriggers.Common.SqlGeneration;
+﻿using Laraue.EfCoreTriggers.Common.SqlGeneration;
 using Laraue.EfCoreTriggers.Tests.Tests.Base;
+using Xunit.Categories;
 
 namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 {
+    [UnitTest]
     public abstract class BaseMemberAssignmentUnitTests : BaseMemberAssignmentTests
     {
         protected readonly ITriggerProvider Provider;
@@ -26,32 +28,32 @@ namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 
         public override void EnumValueSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedEnumValueSql, SetEnumValueExpression);
+            Provider.AssertGeneratedSql(ExceptedEnumValueSql, SetEnumValueExpression);
         }
 
         public override void DecimalAddSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedDecimalAddSql, AddDecimalValueExpression);
+            Provider.AssertGeneratedSql(ExceptedDecimalAddSql, AddDecimalValueExpression);
         }
 
         public override void DoubleSubSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedDoubleSubSql, SubDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedDoubleSubSql, SubDoubleValueExpression);
         }
 
         public override void IntMultiplySql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedIntMultiplySql, MultiplyIntValueExpression);
+            Provider.AssertGeneratedSql(ExceptedIntMultiplySql, MultiplyIntValueExpression);
         }
 
         public override void BooleanValueSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedBooleanSql, SetBooleanValueExpression);
+            Provider.AssertGeneratedSql(ExceptedBooleanSql, SetBooleanValueExpression);
         }
 
         public override void NewGuid()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedNewGuidSql, SetNewGuidValueExpression);
+            Provider.AssertGeneratedSql(ExceptedNewGuidSql, SetNewGuidValueExpression);
         }
     }
 }

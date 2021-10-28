@@ -1,8 +1,10 @@
-using Laraue.EfCoreTriggers.Common.SqlGeneration;
+﻿using Laraue.EfCoreTriggers.Common.SqlGeneration;
 using Laraue.EfCoreTriggers.Tests.Tests.Base;
+using Xunit.Categories;
 
 namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 {
+    [UnitTest]
     public abstract class UnitMathFunctionsTests : BaseMathFunctionsTests
     {
         protected readonly ITriggerProvider Provider;
@@ -32,47 +34,47 @@ namespace Laraue.EfCoreTriggers.Tests.Tests.Unit
 
         public override void MathAbsDecimalSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedAbsSql, MathAbsDecimalValueExpression);
+            Provider.AssertGeneratedSql(ExceptedAbsSql, MathAbsDecimalValueExpression);
         }
         
         public override void MathAcosSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedAcosSql, MathAcosDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedAcosSql, MathAcosDoubleValueExpression);
         }
 
         public override void MathAsinSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedAsinSql, MathAsinDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedAsinSql, MathAsinDoubleValueExpression);
         }
 
         public override void MathAtanSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedAtanSql, MathAtanDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedAtanSql, MathAtanDoubleValueExpression);
         }
 
         public override void MathAtan2Sql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedAtan2Sql, MathAtan2DoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedAtan2Sql, MathAtan2DoubleValueExpression);
         }
 
         public override void MathCeilingDoubleSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedCeilingSql, MathCeilingDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedCeilingSql, MathCeilingDoubleValueExpression);
         }
 
         public override void MathCosSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedCosSql, MathCosDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedCosSql, MathCosDoubleValueExpression);
         }
 
         public override void MathExpSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedExpSql, MathExpDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedExpSql, MathExpDoubleValueExpression);
         }
 
         public override void MathFloorDoubleSql()
         {
-            Provider.AssertGeneratedInsertTriggerInsertActionSql(ExceptedFloorSql, MathFloorDoubleValueExpression);
+            Provider.AssertGeneratedSql(ExceptedFloorSql, MathFloorDoubleValueExpression);
         }
     }
 }

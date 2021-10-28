@@ -1,6 +1,7 @@
-﻿using Laraue.EfCoreTriggers.Tests.Infrastructure;
+﻿using System;
+using Laraue.EfCoreTriggers.Tests.Infrastructure;
 using Laraue.EfCoreTriggers.Tests.Tests.Base;
-using Laraue.EfCoreTriggers.Tests.Tests.Unit;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Categories;
 
@@ -10,64 +11,108 @@ namespace Laraue.EfCoreTriggers.Tests.Tests.Native
     public abstract class NativeMathFunctionTests : BaseMathFunctionsTests
     {
         protected IContextOptionsFactory<DynamicDbContext> ContextOptionsFactory { get; }
+        protected Action<DynamicDbContext> SetupDbContext { get; }
+        protected Action<ModelBuilder> SetupModelBuilder { get; }
 
-        protected NativeMathFunctionTests(IContextOptionsFactory<DynamicDbContext> contextOptionsFactory)
+        protected NativeMathFunctionTests(IContextOptionsFactory<DynamicDbContext> contextOptionsFactory, Action<DynamicDbContext> setupDbContext = null)
         {
             ContextOptionsFactory = contextOptionsFactory;
+            SetupDbContext = setupDbContext;
+        }
+
+        public static double CustomMathRound(double value)
+        {
+            return Math.Round(value, 4, MidpointRounding.ToNegativeInfinity);
         }
 
         public override void MathAbsDecimalSql()
         {
-            using var dbContext = ContextOptionsFactory.GetDbContext(MathAbsDecimalValueExpression);
-
-            dbContext.SourceEntities.Add(new SourceEntity
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathAbsDecimalValueExpression, SetupDbContext, SetupModelBuilder,  new SourceEntity
             {
                 DecimalValue = -2.04M,
             });
-            dbContext.SaveChanges();
 
-            var insertedEntity = Assert.Single(dbContext.DestinationEntities);
             Assert.Equal(2.04M, insertedEntity.DecimalValue);
         }
 
         public override void MathAcosSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathAcosDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = 1,
+            });
+            
+            Assert.Equal(0, insertedEntity.DoubleValue);
         }
 
         public override void MathAsinSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathAsinDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = 0,
+            });
+
+            Assert.Equal(0, insertedEntity.DoubleValue);
         }
 
         public override void MathAtanSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathAtanDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = 0,
+            });
+
+            Assert.Equal(0, insertedEntity.DoubleValue);
         }
 
         public override void MathAtan2Sql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathAtan2DoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = 1,
+            });
+
+            Assert.Equal(0.7853, CustomMathRound(insertedEntity.DoubleValue.Value));
         }
 
         public override void MathCeilingDoubleSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathCeilingDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = -1.36,
+            });
+
+            Assert.Equal(-1, insertedEntity.DoubleValue);
         }
 
         public override void MathCosSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathCosDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = -1,
+            });
+
+            Assert.Equal(0.5403, CustomMathRound(insertedEntity.DoubleValue.Value));
         }
 
         public override void MathExpSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathExpDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = 1.2,
+            });
+
+            Assert.Equal(3.3201, CustomMathRound(insertedEntity.DoubleValue.Value));
         }
 
         public override void MathFloorDoubleSql()
         {
-            throw new System.NotImplementedException();
+            var insertedEntity = ContextOptionsFactory.CheckTrigger(MathFloorDoubleValueExpression, SetupDbContext, SetupModelBuilder, new SourceEntity
+            {
+                DoubleValue = -1.2,
+            });
+
+            Assert.Equal(-2, insertedEntity.DoubleValue);
         }
     }
 }

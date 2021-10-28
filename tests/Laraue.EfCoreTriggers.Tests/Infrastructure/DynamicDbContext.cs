@@ -22,13 +22,24 @@ namespace Laraue.EfCoreTriggers.Tests.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<DestinationEntity>()
+                .HasIndex(x => x.UniqueIdentifier)
+                .IsUnique();
+            
             _setupDbContext?.Invoke(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
         public override async ValueTask DisposeAsync()
         {
             await Database.EnsureDeletedAsync();
             await base.DisposeAsync();
+        }
+
+        public override void Dispose()
+        {
+            Database.EnsureDeleted();
+            base.Dispose();
         }
     }
 }

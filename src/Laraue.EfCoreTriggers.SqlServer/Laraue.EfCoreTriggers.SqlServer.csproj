@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Generating native SqlServer triggers through migrations using EFCore entity builder.</Description>
     <RepositoryUrl>https://github.com/zirou5055/Laraue.EfCoreTriggers.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Authors>Belyanskiy Ilya, zirou</Authors>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.1-alpah.2</Version>
     <PackageProjectUrl>https://github.com/zirou5055/Laraue.EfCoreTriggers</PackageProjectUrl>
     <PackageTags>Entity Framework Core;entity-framework-core;ef;efcore;triggers;sql;SqlServer</PackageTags>
     <LangVersion>Latest</LangVersion>
     <PackageId>Zirou.EfCoreTriggers.SqlServer</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageVersion>1.1.1-alpha.1</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

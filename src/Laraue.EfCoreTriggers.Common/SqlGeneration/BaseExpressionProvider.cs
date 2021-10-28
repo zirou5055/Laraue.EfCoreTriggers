@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -29,6 +29,8 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
         /// </summary>
         protected virtual char Quote => '\'';
 
+        protected virtual char Delimiter => '"';
+
         /// <summary>
         /// Mappings between <see cref="Type">CLR Type</see> and SQL column types.
         /// Do not ask types directly from this property, use <see cref="GetSqlType"/> instead.
@@ -44,16 +46,17 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
         /// <returns></returns>
         protected string GetSqlType(Type type)
         {
-            var nullableUnderlyingType = Nullable.GetUnderlyingType(type);
-            if (nullableUnderlyingType != null)
-            {
-                type = nullableUnderlyingType;
-            }
-            
+            type = GetNotNullableType(type);
             type = type.IsEnum ? typeof(Enum) : type;
             TypeMappings.TryGetValue(type, out var sqlType);
             return sqlType;
 		}
+        
+        protected Type GetNotNullableType(Type type)
+        {
+            var nullableUnderlyingType = Nullable.GetUnderlyingType(type);
+            return nullableUnderlyingType ?? type;
+        }
 
         /// <summary>
         /// Get expression operand based on <see cref="ExpressionType"/> property.
@@ -173,12 +176,17 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
 
         protected virtual string GetMemberExpressionSql(MemberExpression memberExpression, ArgumentType argumentType)
         {
+            return GetColumnSql(memberExpression.Member, argumentType);
+        }
+        
+        protected virtual string GetColumnSql(MemberInfo memberInfo, ArgumentType argumentType)
+        {
             return argumentType switch
             {
-                ArgumentType.New => $"{NewEntityPrefix}.{GetColumnName(memberExpression.Member)}", 
-                ArgumentType.Old => $"{OldEntityPrefix}.{GetColumnName(memberExpression.Member)}", 
-                ArgumentType.None => GetColumnName(memberExpression.Member), 
-                _ => $"{GetTableName(memberExpression.Member)}.{GetColumnName(memberExpression.Member)}",
+                ArgumentType.New => $"{NewEntityPrefix}.{GetColumnName(memberInfo)}", 
+                ArgumentType.Old => $"{OldEntityPrefix}.{GetColumnName(memberInfo)}", 
+                ArgumentType.None => GetColumnName(memberInfo), 
+                _ => $"{GetTableName(memberInfo)}.{GetColumnName(memberInfo)}",
             };
         }
 
@@ -188,11 +196,11 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
         /// <param name="memberAssignment"></param>
         /// <param name="argumentTypes"></param>
         /// <returns></returns>
-        protected virtual (MemberInfo MemberInfo, SqlBuilder AssignmentSqlResult) GetMemberAssignmentParts(
+        protected virtual (MemberAssignment MemberAssignment, SqlBuilder AssignmentSqlResult) GetMemberAssignmentParts(
             MemberAssignment memberAssignment, Dictionary<string, ArgumentType> argumentTypes)
         {
             var sqlExtendedResult = GetExpressionSql(memberAssignment.Expression, argumentTypes);
-            return (memberAssignment.Member, sqlExtendedResult);
+            return (memberAssignment, sqlExtendedResult);
         }
 
         protected virtual SqlBuilder GetMethodCallExpressionSql(MethodCallExpression methodCallExpression, Dictionary<string, ArgumentType> argumentTypes)
@@ -210,34 +218,32 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
 
         protected virtual SqlBuilder GetUnaryExpressionSql(UnaryExpression unaryExpression, Dictionary<string, ArgumentType> argumentTypes)
         {
-            var internalSql = GetExpressionSql(unaryExpression.Operand, argumentTypes);
+            var internalExpressionSql = GetExpressionSql(unaryExpression.Operand, argumentTypes);
+            var sqlBuilder = new SqlBuilder(internalExpressionSql.AffectedColumns);
+            
+            if (unaryExpression.NodeType == ExpressionType.Convert)
+            {
+                if (IsNeedConvertion(unaryExpression))
+                {
+                    sqlBuilder.Append(GetConvertExpressionSql(unaryExpression, internalExpressionSql));
+                }
+                else
+                {
+                    sqlBuilder = internalExpressionSql;
+                }
 
-            var sqlBuilder = new SqlBuilder();
-            sqlBuilder.MergeColumnsInfo(internalSql.AffectedColumns);
-            sqlBuilder.Append(GetUnaryExpressionSql(unaryExpression, internalSql.Sql));
+                return sqlBuilder;
+            }
+            
+            var operand = GetExpressionOperandSql(unaryExpression);
+            
+            var sql = unaryExpression.NodeType == ExpressionType.Negate 
+                ? $"{operand}{internalExpressionSql}" 
+                : $"{internalExpressionSql} {operand}";
 
+            sqlBuilder.Append(sql);
+            
             return sqlBuilder;
-        }
-
-
-        protected virtual string GetUnaryExpressionSql(Expression expression, string member)
-        {
-            if (expression.NodeType == ExpressionType.Convert)
-            {
-                var unaryExpression = expression as UnaryExpression;
-                return IsNeedConvertion(unaryExpression)
-                    ? GetConvertExpressionSql(unaryExpression, member)
-                    : member;
-            }
-            var operand = GetExpressionOperandSql(expression);
-            if (expression.NodeType == ExpressionType.Negate)
-            {
-                return $"{operand}{member}";
-            }
-            else
-            {
-                return $"{member} {operand}";
-            }
         }
 
         protected virtual SqlBuilder[] GetNewExpressionColumnsSql(NewExpression newExpression, Dictionary<string, ArgumentType> argumentTypes)
@@ -265,7 +271,7 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
 
             var binaryExpressionParts = GetBinaryExpressionParts();
 
-            // Check, if one arument is null, should be generated expression "value IS NULL"
+            // Check, if one argument is null, should be generated expression "value IS NULL"
             if (binaryExpression.NodeType is ExpressionType.Equal || binaryExpression.NodeType is ExpressionType.NotEqual)
             {
                 if (binaryExpressionParts.Any(x => x is ConstantExpression constExpr && constExpr.Value == null))
@@ -291,13 +297,20 @@ namespace Laraue.EfCoreTriggers.Common.SqlGeneration
         /// <param name="memberInitExpression"></param>
         /// <param name="argumentTypes"></param>
         /// <returns></returns>
-        protected Dictionary<MemberInfo, SqlBuilder> GetMemberInitExpressionAssignmentParts(MemberInitExpression memberInitExpression, Dictionary<string, ArgumentType> argumentTypes)
+        protected Dictionary<MemberAssignment, SqlBuilder> GetMemberInitExpressionAssignmentParts(MemberInitExpression memberInitExpression, Dictionary<string, ArgumentType> argumentTypes)
         {
             return memberInitExpression.Bindings.Select(memberBinding =>
             {
                 var memberAssignmentExpression = (MemberAssignment)memberBinding;
                 return GetMemberAssignmentParts(memberAssignmentExpression, argumentTypes);
-            }).ToDictionary(x => x.MemberInfo, x => x.AssignmentSqlResult);
+            }).ToDictionary(x => x.MemberAssignment, x => x.AssignmentSqlResult);
+        }
+        
+        protected Dictionary<MemberExpression, SqlBuilder> GetNewExpressionAssignmentParts(NewExpression newExpression, Dictionary<string, ArgumentType> argumentTypes)
+        {
+            return newExpression.Arguments.ToDictionary(
+                argument => (MemberExpression)argument,
+                argument => GetExpressionSql(argument, argumentTypes));
         }
 
         /// <summary>
